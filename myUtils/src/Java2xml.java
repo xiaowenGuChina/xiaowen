@@ -1,40 +1,47 @@
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-//import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.io.ByteArrayOutputStream;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Scanner;
+
 
 public class Java2xml {
-    private String createXml() throws ParserConfigurationException, TransformerException {
+    public String createXml(String[] input) throws ParserConfigurationException, TransformerException {
         String xmlString = "";
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.newDocument();
         document.setXmlStandalone(true);
 
+        Element resp_param = generateElement(document, null, input[0]);
+       try {
 
-        Element itemInfo = generateElement(document, null, "ItemInfo");
-        generateElement(document, "ItemInfo", "ItemStatistics");
-        generateElement(document, "ItemInfo", "Items");
-        generateElement(document, "Items", "Item");
-        generateElement(document, "Item", "ItemName");
-        generateElement(document, "Item", "ItemNum");
-        generateElement(document, "Item", "ItemValue");
-        generateElement(document, "ItemInfo", "Remark");
-        getChildNodes(itemInfo);
+           for (int i = 0; i <input.length -1 ; i+=2) {
+
+               generateElement(document,input[i],input[i+1]);
+           }
+       }catch (Exception e){
+           System.out.println(e);
+
+       }
+
+
+
+        getChildNodes(resp_param);
 
         TransformerFactory transFactory = TransformerFactory.newInstance();
         Transformer transformer = transFactory.newTransformer();
@@ -73,12 +80,9 @@ public class Java2xml {
             if (node instanceof Element){
                 Element e1 = (Element)node;
                 getChildNodes(e1);
-
             }
         }
     }
-    @Test
-    public void test() throws TransformerException, ParserConfigurationException {
-        createXml();
-    }
+
+
 }
